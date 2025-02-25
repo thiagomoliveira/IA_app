@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Analytics</title>
+    <link rel="stylesheet" href="css/general-styles.css" />
+  </head>
+  <body>
+    <div id="content">
+      <div id="sidebar">
+        <div id="scrollable-content">
+          <div id="drop_zone_exemplo" class="drop_zone">
+            <p><i>EXEMPLO</i></p>
+            <button class="remove_file" type="button">&times;</button>
+          </div>
+
+          <div id="drop_zone_segmento" class="drop_zone">
+            <p><i>SEGMENTO</i></p>
+            <button class="remove_file" type="button">&times;</button>
+          </div>
+
+          <div id="drop_zone_briefing" class="drop_zone">
+            <p><i>BRIEFING</i></p>
+            <button class="remove_file" type="button">&times;</button>
+          </div>
+
+          <label for="temperatura_mensagens">Criatividade das mensagens:</label>
+          <div class="temperatura-container">
+            <input
+              type="range"
+              id="temperatura_mensagens"
+              min="1"
+              max="10"
+              value="5"
+            />
+            <span id="temperatura_mensagens_valor">5</span>
+          </div>
+
+          <label for="temperatura_briefing">Criatividade do Briefing:</label>
+          <div class="temperatura-container">
+            <input
+              type="range"
+              id="temperatura_briefing"
+              min="1"
+              max="10"
+              value="5"
+            />
+            <span id="temperatura_briefing_valor">5</span>
+          </div>
+        </div>
+        <div class="div-botao">
+          <button id="botao_gerar_mensagens" type="button">
+            Gerar mensagens
+          </button>
+        </div>
+      </div>
+
+      <div id="main-content">
+        <h2>Mensagens Geradas</h2>
+        <div id="mensagens-container">
+          <p>Nenhuma mensagem gerada até o momento.</p>
+        </div>
+        <h3>Novo briefing</h3>
+        <p id="briefing-text">Nenhum briefing gerado até o momento.</p>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="module" src="js/pages/mensagensDeNegociacao.js"></script>
+  </body>
+</html>
