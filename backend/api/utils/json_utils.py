@@ -12,5 +12,5 @@ def extrair_lista_de_json(texto: str) -> list[str]:
             return mensagens_json
     except json.JSONDecodeError:
         logging.error(f"Erro ao converter JSON, resposta: {texto}")
+    return [msg.strip() for msg in texto.split("\n") if msg.strip()]
 
-    return [msg.strip() for msg in texto.split("\n")[:3] if msg.strip()]

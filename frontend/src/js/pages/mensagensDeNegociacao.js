@@ -13,22 +13,10 @@ document.addEventListener("DOMContentLoaded", function () {
     "temperatura_mensagens",
     "temperatura_mensagens_valor"
   );
-  sincronizarValorRangeSlider(
-    "temperatura_briefing",
-    "temperatura_briefing_valor"
-  );
 });
 // Extensões de arquivo permitidas
 const allowedFileExtensions = ["txt", "docx"];
 
-const dragAndDropExemplo = new DragAndDropSingleFile(
-  "#drop_zone_exemplo",
-  allowedFileExtensions
-);
-const dragAndDropSegmento = new DragAndDropSingleFile(
-  "#drop_zone_segmento",
-  allowedFileExtensions
-);
 const dragAndDropBriefing = new DragAndDropSingleFile(
   "#drop_zone_briefing",
   allowedFileExtensions
@@ -39,38 +27,34 @@ const botaoGerarMensagens = document.querySelector("#botao_gerar_mensagens");
 botaoGerarMensagens.addEventListener("click", async () => {
   exibirProcessamento(true); // Exibe o carregamento
 
-  const exemploFile = dragAndDropExemplo.getFile();
-  const segmentoFile = dragAndDropSegmento.getFile();
   const briefingFile = dragAndDropBriefing.getFile();
+  const mensagensSequenciais = document.getElementById(
+    "mensagens_sequenciais"
+  ).checked;
+
+  const numeroMensagens = document.getElementById("numero_mensagens").value;
 
   const jsonContent = {
-    exemplo: "",
-    segmento: "",
     briefing: "",
-    configuracoes_llm_mensagens: {
-      temperatura:
+    ordenar_mensagens: mensagensSequenciais,
+    quantidade_mensagens: numeroMensagens,
+    configuracoes_llm: {
+      temperature:
         parseFloat(document.getElementById("temperatura_mensagens").value) / 10,
-    },
-    configuracoes_llm_briefing: {
-      temperatura:
-        parseFloat(document.getElementById("temperatura_briefing").value) / 10,
     },
   };
 
   try {
     // Adiciona os conteúdos dos arquivos ao json
-    await addFileContentToJson(exemploFile, "exemplo", jsonContent);
-    await addFileContentToJson(segmentoFile, "segmento", jsonContent);
     await addFileContentToJson(briefingFile, "briefing", jsonContent);
 
     // Valida os campos
     const mensagemErro = validarCampos(jsonContent);
-
     if (mensagemErro) {
       alert(mensagemErro);
     } else {
       const response = await criarMensagemNegociacao(jsonContent);
-      exibirResposta(response.data); // Exibe a resposta da API
+      exibirResposta(response.data, mensagensSequenciais); // Exibe a resposta da API
     }
   } catch (error) {
     alert("Erro durante o processamento, veja o console para detalhes");
@@ -80,29 +64,53 @@ botaoGerarMensagens.addEventListener("click", async () => {
   }
 });
 
-function exibirResposta(response) {
+function exibirResposta(response, mensagensSequenciais) {
   console.log(response);
   const mensagensContainer = document.querySelector("#mensagens-container");
   mensagensContainer.innerHTML = "";
 
-  const briefingText = document.querySelector("#briefing-text");
+  const melhoriaText = document.querySelector("#melhoria-text");
 
   // Exibe as mensagens geradas
   if (response && response.mensagens_marketing) {
-    response.mensagens_marketing.forEach((mensagem) => {
-      const p = document.createElement("p");
-      p.textContent = mensagem;
-      mensagensContainer.appendChild(p);
-    });
+    if (mensagensSequenciais) {
+      // Se for sequência ordenada
+      response.mensagens_marketing.forEach((mensagem, index) => {
+        const p = document.createElement("p");
+        p.innerHTML = `<strong>${index + 1}.</strong> ${mensagem}`;
+
+        // Adiciona margem de 10px em todas, exceto a última
+        if (index < response.mensagens_marketing.length - 1) {
+          p.style.marginBottom = "10px";
+        }
+
+        mensagensContainer.appendChild(p);
+      });
+    } else {
+      // Se não for sequência ordenada, usa lista com bolinhas
+      const ul = document.createElement("ul");
+      response.mensagens_marketing.forEach((mensagem, index) => {
+        const li = document.createElement("li");
+        li.textContent = mensagem;
+
+        // Adiciona margem de 10px em todos, exceto o último
+        if (index < response.mensagens_marketing.length - 1) {
+          li.style.marginBottom = "10px";
+        }
+
+        ul.appendChild(li);
+      });
+      mensagensContainer.appendChild(ul);
+    }
   } else {
     mensagensContainer.innerHTML = "<p>Nenhuma mensagem gerada.</p>";
   }
 
-  // Exibe o briefing detalhado
-  if (response && response.novo_briefing) {
-    briefingText.innerHTML = response.novo_briefing;
+  // Exibe as sugestões de melhoria
+  if (response && response.sugestoes_melhoria) {
+    melhoriaText.innerHTML = response.sugestoes_melhoria;
   } else {
-    briefingText.textContent = "Nenhum briefing disponível.";
+    melhoriaText.textContent = "Nenhuma sugestão disponível.";
   }
 }
 
@@ -151,3 +159,16 @@ function validarCampos(jsonContent) {
 
   return null;
 }
+
+const mensagensSequenciaisCheckbox = document.getElementById(
+  "mensagens_sequenciais"
+);
+const numeroMensagensInput = document.getElementById("numero_mensagens");
+
+mensagensSequenciaisCheckbox.addEventListener("change", () => {
+  let numeroMensagens = parseInt(numeroMensagensInput.value);
+
+  if (mensagensSequenciaisCheckbox.checked && numeroMensagens < 4) {
+    numeroMensagensInput.value = 4; // Ajusta para 4
+  }
+});

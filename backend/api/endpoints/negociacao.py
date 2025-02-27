@@ -1,49 +1,49 @@
 import logging
-from typing import Dict, Any
+from typing import List
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException
 from exceptions.langchain_exception import LangchainException 
-from tasks.marketing_task import gerar_novo_briefing, gerar_mensagens_marketing
+from tasks.marketing_task import gerar_mensagens_marketing_e_sugestoes_de_melhoria
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
 class ConfiguracoesLLM(BaseModel):
-    temperatura: float
+    temperature: float
 
 class NegotiationMessageSchema(BaseModel):
     briefing: str
-    segmento: str
-    exemplo: str
-    configuracoes_llm_mensagens: ConfiguracoesLLM
-    configuracoes_llm_briefing: ConfiguracoesLLM
+    ordenar_mensagens: bool
+    quantidade_mensagens: int
+    configuracoes_llm: ConfiguracoesLLM
 
-@router.post("/criar-mensagem-negociacao/", response_model=Dict[str, Any])
+class NegotiationResponseSchema(BaseModel):
+    mensagens_marketing: List[str]
+    sugestoes_melhoria: str
+    
+@router.post("/criar-mensagem-negociacao/", response_model=NegotiationResponseSchema)
 async def criar_mensagem_negociacao_endpoint(data: NegotiationMessageSchema):
     """
-    Gera novo briefing e 3 novas mensagens de negociação baseada nos dados fornecidos.
+    Gera mensagens de negociação e sugestões de melhoria para o briefing fornecido.
 
     Args:
-        data (NegotiationMessageSchema): Dados de entrada contendo briefing, segmento, exemplo e configurações da LLM.
+        data (NegotiationMessageSchema): Dados de entrada contendo briefing, configurações da LLM 
+        e opções de ordenação.
 
     Returns:
-        dict: Novo briefing gerado e mensagens de marketing associadas.
+        NegotiationResponseSchema: Contém as mensagens geradas e sugestões de melhoria para o briefing.
     """
     try:
         logger.info("Recebendo solicitação para criar mensagem de negociação")
-        
-        temperatura_briefing = data.configuracoes_llm_briefing.temperatura
-        temperatura_mensagens = data.configuracoes_llm_mensagens.temperatura
 
-        novo_briefing = gerar_novo_briefing(data.briefing, data.segmento, temperatura_briefing)
-        mensagens_marketing = gerar_mensagens_marketing(novo_briefing, data.exemplo, temperatura_mensagens)
+        response = gerar_mensagens_marketing_e_sugestoes_de_melhoria(data)
 
         logger.info("Mensagem de negociação gerada com sucesso")
 
-        return {
-            "novo_briefing": novo_briefing,
-            "mensagens_marketing": mensagens_marketing
-        }
+        return NegotiationResponseSchema(
+            mensagens_marketing=response['mensagens_marketing'],
+            sugestoes_melhoria=response['sugestoes_melhoria']
+        )
     
     except LangchainException as e:
         logger.error(f"Erro específico do Langchain: {e.message}")
