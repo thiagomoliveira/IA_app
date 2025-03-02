@@ -65,11 +65,8 @@ botaoGerarMensagens.addEventListener("click", async () => {
 });
 
 function exibirResposta(response, mensagensSequenciais) {
-  console.log(response);
   const mensagensContainer = document.querySelector("#mensagens-container");
   mensagensContainer.innerHTML = "";
-
-  const melhoriaText = document.querySelector("#melhoria-text");
 
   // Exibe as mensagens geradas
   if (response && response.mensagens_marketing) {
@@ -104,13 +101,6 @@ function exibirResposta(response, mensagensSequenciais) {
     }
   } else {
     mensagensContainer.innerHTML = "<p>Nenhuma mensagem gerada.</p>";
-  }
-
-  // Exibe as sugestões de melhoria
-  if (response && response.sugestoes_melhoria) {
-    melhoriaText.innerHTML = response.sugestoes_melhoria;
-  } else {
-    melhoriaText.textContent = "Nenhuma sugestão disponível.";
   }
 }
 

@@ -1,16 +1,3 @@
-def prompt_sugestoes() -> str:
-    return """
-    A partir do briefing fornecido, forneça sugestões práticas de melhoria para otimizar nossas campanhas.
-
-    Em seguida, formate as sugestões usando tags HTML apropriadas para exibição em uma página web. Use, por exemplo, <h2> para títulos e <p> para parágrafos, e outras tags conforme necessário, para garantir que o conteúdo seja facilmente visualizável.
-
-    O objetivo é que o novo briefing seja facilmente integrado em uma página HTML sem precisar de ajustes adicionais.
-
-    Briefing: {briefing}
-
-    Retorne apenas o conteúdo formatado em HTML, sem explicações adicionais ou texto extra. Não inclua blocos de código ou tags como ``` ou <html>.
-"""
-
 def prompt_mensagens_marketing() -> str:
     return """
     A partir do briefing abaixo, crie {quantidade_mensagens} mensagens de marketing envolventes e criativas.

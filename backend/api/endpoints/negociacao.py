@@ -3,7 +3,7 @@ from typing import List
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException
 from exceptions.langchain_exception import LangchainException 
-from tasks.marketing_task import gerar_mensagens_marketing_e_sugestoes_de_melhoria
+from tasks.marketing_task import gerar_mensagens_marketing
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -19,30 +19,28 @@ class NegotiationMessageSchema(BaseModel):
 
 class NegotiationResponseSchema(BaseModel):
     mensagens_marketing: List[str]
-    sugestoes_melhoria: str
     
 @router.post("/criar-mensagem-negociacao/", response_model=NegotiationResponseSchema)
 async def criar_mensagem_negociacao_endpoint(data: NegotiationMessageSchema):
     """
-    Gera mensagens de negociação e sugestões de melhoria para o briefing fornecido.
+    Gera mensagens de negociação para o briefing fornecido.
 
     Args:
         data (NegotiationMessageSchema): Dados de entrada contendo briefing, configurações da LLM 
         e opções de ordenação.
 
     Returns:
-        NegotiationResponseSchema: Contém as mensagens geradas e sugestões de melhoria para o briefing.
+        NegotiationResponseSchema: Contém as mensagens geradas.
     """
     try:
         logger.info("Recebendo solicitação para criar mensagem de negociação")
 
-        response = gerar_mensagens_marketing_e_sugestoes_de_melhoria(data)
+        response = gerar_mensagens_marketing(data)
 
         logger.info("Mensagem de negociação gerada com sucesso")
 
         return NegotiationResponseSchema(
-            mensagens_marketing=response['mensagens_marketing'],
-            sugestoes_melhoria=response['sugestoes_melhoria']
+            mensagens_marketing=response,
         )
     
     except LangchainException as e:
