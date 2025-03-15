@@ -3,7 +3,7 @@ from typing import List
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException
 from exceptions.langchain_exception import LangchainException 
-from tasks.marketing_task import gerar_mensagens_marketing
+from tasks.negociacao_task import gerar_mensagens
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ async def criar_mensagem_negociacao_endpoint(data: NegotiationMessageSchema):
     try:
         logger.info("Recebendo solicitação para criar mensagem de negociação")
 
-        response = gerar_mensagens_marketing(data)
+        response = gerar_mensagens(data)
 
         logger.info("Mensagem de negociação gerada com sucesso")
 

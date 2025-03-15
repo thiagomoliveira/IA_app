@@ -1,22 +1,32 @@
-def prompt_mensagens_marketing() -> str:
+def prompt_mensagens() -> str:
     return """
-    A partir do briefing abaixo, crie {quantidade_mensagens} mensagens de marketing envolventes e criativas.
+    Task: Generate engaging and creative messages.
 
-    Caso o parâmetro 'ordenar_mensagens' seja true, as mensagens devem seguir uma sequência lógica dentro da campanha, ou seja, devem se complementar e formar uma narrativa ou estratégia coesa.
+    **Important**:  
+    - You must generate **exactly** {quantidade_mensagens} messages. No more, no less.  
+    - If `sort_messages` is `true`, the messages should follow a logical sequence, forming a cohesive narrative or campaign strategy.  
+      Examples: guiding the audience through a **sales funnel**, telling an **engaging brand story**, or building anticipation with **progressive messaging**.  
+    - If `sort_messages` is `false`, the messages should be independent, meaning each message must stand alone without relying on previous or future messages for context.  
+      - Each message should be **self-contained**, conveying a complete idea on its own.  
+      - This ensures the messages can be used **interchangeably** across different marketing contexts.  
 
-    Caso contrário, as mensagens devem ser criadas de forma independente, sem a necessidade de seguirem uma sequência lógica.
+    **Response format**:  
+    - Return **only** a JSON list with the messages (no introductions or additional text).  
+    - Expected format:  
+      `["Message 1", "Message 2", "Message 3"]`  
+    - Do not number the messages.  
+    - Return the messages as plain strings, without escape characters or unnecessary formatting.  
+    - Make sure the messages do not contain brackets (`[` or `]`) within the text to avoid parsing issues.  
 
-    Retorne apenas uma lista JSON (sem introduções e sem qualquer outro texto) com as mensagens, no formato do exemplo:
+    **Briefing Alignment**:  
+    - The messages **must** be fully aligned with the briefing below to ensure they are relevant and effective for the campaign.  
 
-    ["Mensagem 1", "Mensagem 2", "Mensagem 3"]
+    **Parameter**: 
+    `sort_messages = {ordenar_mensagens}`  
+     `quantity_messages = {quantidade_mensagens}  `   
 
-    **Importante**: Não inclua a numeração nas mensagens (como "Mensagem 1", "Mensagem 2", etc.). Apenas forneça o conteúdo das mensagens diretamente, sem prefixos.
+    **Briefing**:  
+    {briefing}
 
-    Não inclua os caracteres de escape ou aspas extras nas mensagens. Apenas retorne as mensagens como strings normais, sem as barras invertidas ("\\") ou outras escapadas. As mensagens devem ser retornadas de forma simples e legível.
-
-    Não inclua os caracteres "[" ou "]" nas frases, para não dificultar a conversão da lista.
-
-    Parametro: ordenar_mensagens = {ordenar_mensagens}
-
-    Briefing: {briefing}
+    Finally, translate the messages into Portuguese.
     """
